@@ -113,23 +113,18 @@ Per `docs/MIGRATION_PLAN.md`, Phase 0 must be completed before any new features.
 | Add rate limits on login and signup | ✅ In `routes/user.js` |
 | Add `express-mongo-sanitize` | ✅ Applied globally |
 
-### Phase 0 Tasks Still Remaining
+### Current Development Phase: **Phase 1 — Data Model**
 
-| Task | Status |
-|---|---|
-| **Initialize git repository** | ❌ No `.git` directory exists |
-| **Add Mapbox `permanent=true` for stored geocodes** | ❌ Not set in geocoding call |
-| **Re-geocode on address change (update listing)** | ❌ `updateListing` does not call geocoding |
-| **Add ESLint configuration** | ❌ `npm run lint` script exists but no `.eslintrc` or `eslint.config` file found |
-| **Add tests directory and initial tests** | ❌ `npm run test` script exists but no `tests/` directory |
-| **Rate limiting on search and uploads** | ❌ Only login/signup have rate limits |
-| **Rotate credentials** | ❌ Cannot verify; requires manual action |
-| **Update README to match actual state** | ⚠️ README exists but still references "verified accommodation" which is not yet implemented |
-| **Confirm Mapbox permanent geocoding plan** | ❌ Needs manual verification |
-| **Old Cloudinary images cleanup** | ❌ Listing update does not delete old Cloudinary assets |
-| **Validate file type by magic bytes (`file-type` package)** | ❌ Only `allowed_formats` on Cloudinary; no server-side magic bytes check |
-| **Strip EXIF data from uploads** | ❌ Not implemented |
-| **Upload size limit** | ❌ No `limits` option on multer config |
+| Task | Status | Notes |
+|---|---|---|
+| **Phase 0: Base Security & Tooling** | ✅ Completed & Committed | Git initialized, 0 audit vulnerabilities, 0 lint warnings, 11 tests passing |
+| **Add role to User model** | ✅ Completed | Default `student`, accepts `owner`, `admin` |
+| **Create College model** | ✅ Completed | GeoJSON Point with `2dsphere` index |
+| **Add PG fields to Listing model** | ✅ Completed | Status, rentMin/Max, roomTypes, foodOptions, facilities, rules, 2dsphere index |
+| **Idempotent migration script** | ✅ Completed | `init/migrations/001-pg-fields.js` |
+| **Data model tests** | ✅ Completed | `tests/models.test.js` (8 model tests, 19 tests total passing) |
+| **Seed launch college** | ⏳ Next | Geocoded launch college coordinates |
+| **Phase 2: Nearby Search** | ⏳ Queued | `$geoNear` pipeline in `services/geoSearch.js` |
 
 ---
 
@@ -239,27 +234,17 @@ WanderPG/
 ---
 
 ## 6. The Exact Next Step to Continue Development
+ 
+**Next step: Seed the launch college and implement Phase 2 (Nearby search with `$geoNear`).**
 
-**Next step: Commit Phase 0 fixes and begin Phase 1 — Data Model.**
-
-1. Commit all Phase 0 security, test, lint, and brand fixes to `wanderpg/phase-0`.
-2. Begin Phase 1:
-   - Add `role` (`student`, `owner`, `admin`) to `models/user.js` (defaulting to `student`).
-   - Create `models/college.js` with GeoJSON Point and 2dsphere index.
-   - Update `models/listing.js` with PG-specific fields (`area`, `rentMin`, `rentMax`, `roomTypes`, `foodOptions`, `facilities`, `rules`, `status`, `isAvailable`, `isDeleted`, `ownerId`).
-   - Create migration script for existing listings.
-1. **`git init`** and make the initial commit on branch `wanderpg/phase-0`.
-2. Fix the "WanderNest" → "WanderPG" text references (flash messages in `controllers/users.js`, footer in `views/includes/footer.ejs`).
-3. Fix the `.populate("owner")` call to select only safe fields: `.populate("owner", "username")`.
-4. Add `.unknown(false)` to Joi schemas.
-5. Add `webp` to Cloudinary `allowed_formats`.
-6. Add multer `limits` (fileSize: 5 MB).
-7. Fix the CSS typo (`1 rem` → `1rem`).
-8. Fix `newReview.save(newReview)` → `newReview.save()`.
-9. Add ESLint config and run lint.
-10. Create `tests/` directory with a basic test (app starts, 404 catch-all works).
-
-After all Phase 0 items are complete → proceed to **Phase 1 (Data Model)**: add `role` to User, create College model, add new PG fields.
+1. Create launch college seed script with real geocoded coordinates (e.g. Delhi University North Campus or user's target campus).
+2. Build `services/geoSearch.js` using MongoDB aggregation `$geoNear`:
+   - `near`: college GeoJSON point
+   - `distanceField`: distance in meters
+   - `maxDistance`: 5000 (5 km default per PRD)
+   - `spherical`: true
+   - `query`: `{ status: 'approved', isAvailable: true, isDeleted: false }`
+3. Add College routes (`GET /colleges`, `GET /colleges/:slug`) and college-centric search UI.
 
 ---
 
