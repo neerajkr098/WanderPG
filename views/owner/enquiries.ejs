@@ -1,0 +1,102 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container my-5">
+  <!-- Header -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1">
+          <li class="breadcrumb-item"><a href="/owner/listings" class="text-decoration-none text-muted">Owner</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Enquiries</li>
+        </ol>
+      </nav>
+      <h2 class="fw-bold mb-1 text-dark">
+        <i class="fa-solid fa-inbox text-danger me-2"></i>Student Enquiries
+      </h2>
+      <p class="text-muted mb-0">Messages from prospective students interested in your PG</p>
+    </div>
+    <div>
+      <a href="/owner/listings" class="btn btn-outline-secondary rounded-pill px-4">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Enquiries List -->
+  <% if (enquiries && enquiries.length > 0) { %>
+    <div class="row g-3">
+      <% for (let enq of enquiries) { %>
+        <div class="col-12">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-bottom pb-3 mb-3">
+              <div>
+                <h5 class="fw-bold mb-1 text-dark">
+                  <i class="fa-solid fa-user-graduate text-danger me-2"></i>
+                  <%= (enq.studentId && enq.studentId.username) || "Student" %>
+                </h5>
+                <span class="text-muted small">
+                  Inquired about: <strong><%= (enq.pgId && enq.pgId.title) || "PG Property" %></strong>
+                  &bull; <%= new Date(enq.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                </span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <% if (enq.status === 'new') { %>
+                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">New</span>
+                <% } else if (enq.status === 'read') { %>
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill">Read</span>
+                <% } else { %>
+                  <span class="badge bg-secondary-subtle text-secondary border px-3 py-2 rounded-pill">Closed</span>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Message Content -->
+            <p class="mb-3 text-secondary p-3 bg-light rounded-3" style="font-size: 1.05rem;">
+              "<%= enq.message %>"
+            </p>
+
+            <!-- Student Contact Details & Actions -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-2">
+              <div class="d-flex flex-wrap gap-3 small text-muted">
+                <span>
+                  <i class="fa-solid fa-envelope text-danger me-1"></i>
+                  <%= (enq.studentId && enq.studentId.email) || "Email not available" %>
+                </span>
+                <% if (enq.studentId && enq.studentId.phone) { %>
+                  <span>
+                    <i class="fa-solid fa-phone text-success me-1"></i>
+                    <%= enq.studentId.phone %>
+                  </span>
+                <% } %>
+              </div>
+
+              <!-- Status Action Form -->
+              <form action="/owner/enquiries/<%= enq._id %>/status" method="POST" class="d-inline-flex gap-2">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <% if (enq.status === 'new') { %>
+                  <input type="hidden" name="status" value="read">
+                  <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-3">Mark as Read</button>
+                <% } else if (enq.status === 'read') { %>
+                  <input type="hidden" name="status" value="closed">
+                  <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Close Enquiry</button>
+                <% } else { %>
+                  <input type="hidden" name="status" value="read">
+                  <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Reopen</button>
+                <% } %>
+              </form>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  <% } else { %>
+    <!-- Empty State -->
+    <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+      <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center p-4 mb-3 text-muted">
+        <i class="fa-solid fa-envelope-open-text fs-1"></i>
+      </div>
+      <h4 class="fw-bold mb-1">No Student Enquiries Yet</h4>
+      <p class="text-muted mb-0">When students message you from your PG listings, their inquiries will appear here.</p>
+    </div>
+  <% } %>
+</div>

@@ -56,12 +56,40 @@ module.exports.listingSchema = joi
   })
   .unknown(false);
 
-module.exports.reviewSchema = joi.object({
-  review: joi
-    .object({
-      rating: joi.number().required().min(1).max(5),
-      comment: joi.string().required().max(1000),
-    })
-    .required()
-    .unknown(false),
-}).unknown(false);
+module.exports.reviewSchema = joi
+  .object({
+    review: joi
+      .object({
+        rating: joi.number().required().min(1).max(5),
+        comment: joi.string().required().max(1000),
+      })
+      .required()
+      .unknown(false),
+  })
+  .unknown(false);
+
+module.exports.enquirySchema = joi
+  .object({
+    enquiry: joi
+      .object({
+        message: joi.string().required().min(10).max(500),
+      })
+      .required()
+      .unknown(false),
+  })
+  .unknown(false);
+
+module.exports.reportSchema = joi
+  .object({
+    report: joi
+      .object({
+        reason: joi
+          .string()
+          .required()
+          .valid("fake", "wrong_price", "not_available", "inappropriate", "other"),
+        details: joi.string().allow("", null).max(500),
+      })
+      .required()
+      .unknown(false),
+  })
+  .unknown(false);

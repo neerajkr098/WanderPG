@@ -99,3 +99,25 @@ module.exports.isReviewAuthor = async (req, res, next) => {
   }
   next();
 };
+
+module.exports.validateEnquiry = (req, res, next) => {
+  const { enquirySchema } = require("./schema.js");
+  const { error } = enquirySchema.validate(req.body);
+  if (error) {
+    const errMsg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, errMsg);
+  } else {
+    next();
+  }
+};
+
+module.exports.validateReport = (req, res, next) => {
+  const { reportSchema } = require("./schema.js");
+  const { error } = reportSchema.validate(req.body);
+  if (error) {
+    const errMsg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, errMsg);
+  } else {
+    next();
+  }
+};

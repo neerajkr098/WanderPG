@@ -27,6 +27,7 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const collegeRouter = require("./routes/college.js");
 const ownerRouter = require("./routes/owner.js");
+const adminRouter = require("./routes/admin.js");
 
 const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/WanderNest";
 
@@ -163,6 +164,7 @@ app.use((req, res, next) => {
 
 app.use("/colleges", collegeRouter);
 app.use("/owner", ownerRouter);
+app.use("/admin", adminRouter);
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);

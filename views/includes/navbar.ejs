@@ -67,11 +67,15 @@
       </div>
 
        <div class="navbar-nav ms-auto align-items-center">
-        <% if (currUser && (currUser.role === 'owner' || currUser.role === 'admin')) { %>
+        <% if (currUser && currUser.role === 'admin') { %>
+          <a class="nav-link" href="/admin/dashboard"><i class="fa-solid fa-shield-halved text-danger me-1"></i><b>Admin Queue</b></a>
+          <a class="nav-link" href="/owner/listings"><i class="fa-solid fa-gauge me-1"></i>Owner Hub</a>
+        <% } else if (currUser && currUser.role === 'owner') { %>
           <a class="nav-link" href="/owner/listings"><i class="fa-solid fa-gauge me-1"></i><b>Dashboard</b></a>
-          <a class="nav-link" href="/listings/new">List your PG</a>
+          <a class="nav-link" href="/owner/enquiries"><i class="fa-solid fa-inbox me-1"></i>Enquiries</a>
+          <a class="nav-link" href="/listings/new">List PG</a>
         <% } else if (currUser) { %>
-          <span class="navbar-text small text-muted me-2"><i class="fa-solid fa-user me-1"></i><%= currUser.username %></span>
+          <span class="navbar-text small text-muted me-2"><i class="fa-solid fa-user-graduate me-1"></i><%= currUser.username %></span>
         <% } else { %>
           <a class="nav-link" href="/listings/new">List your PG</a>
           <a class="nav-link" href="/signup"><b>Sign up</b></a>

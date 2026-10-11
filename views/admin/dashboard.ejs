@@ -1,0 +1,231 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container my-5">
+  <!-- Header -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill fw-semibold mb-2">
+        <i class="fa-solid fa-shield-halved me-1"></i> Admin Portal
+      </span>
+      <h2 class="fw-bold mb-1 text-dark">Trust & Moderation Queue</h2>
+      <p class="text-muted mb-0">Review pending PG accommodations and action community reports</p>
+    </div>
+  </div>
+
+  <!-- Summary Counters -->
+  <div class="row g-3 mb-5">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small fw-semibold">Pending Approval</div>
+            <h3 class="fw-bold mb-0 text-warning"><%= pendingListings.length %></h3>
+          </div>
+          <div class="rounded-circle bg-warning-subtle text-warning p-3">
+            <i class="fa-solid fa-hourglass-half fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small fw-semibold">Open Reports</div>
+            <h3 class="fw-bold mb-0 text-danger"><%= openReports.length %></h3>
+          </div>
+          <div class="rounded-circle bg-danger-subtle text-danger p-3">
+            <i class="fa-solid fa-triangle-exclamation fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small fw-semibold">Suspended PGs</div>
+            <h3 class="fw-bold mb-0 text-secondary"><%= suspendedListings.length %></h3>
+          </div>
+          <div class="rounded-circle bg-secondary-subtle text-secondary p-3">
+            <i class="fa-solid fa-ban fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 1: Pending Listings Queue -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 bg-white">
+    <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center justify-content-between">
+      <h5 class="fw-bold mb-0 text-dark">
+        <i class="fa-solid fa-list-check text-warning me-2"></i>Pending Listings Queue
+      </h5>
+      <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill"><%= pendingListings.length %> awaiting review</span>
+    </div>
+
+    <% if (pendingListings && pendingListings.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 px-4">
+          <thead class="table-light text-muted small">
+            <tr>
+              <th scope="col" class="ps-4">Property</th>
+              <th scope="col">Owner</th>
+              <th scope="col">Rent / Month</th>
+              <th scope="col">Submitted On</th>
+              <th scope="col" class="text-end pe-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let pg of pendingListings) { %>
+              <tr>
+                <td class="ps-4 py-3">
+                  <div class="d-flex align-items-center gap-3">
+                    <img
+                      src="<%= (pg.image && pg.image.url) || '/images/placeholder.jpg' %>"
+                      alt="<%= pg.title %>"
+                      class="rounded-3 shadow-sm"
+                      style="width: 60px; height: 60px; object-fit: cover;"
+                    />
+                    <div>
+                      <h6 class="fw-bold mb-0 text-dark"><%= pg.title %></h6>
+                      <small class="text-muted"><%= pg.location %></small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="fw-semibold"><%= (pg.owner && pg.owner.username) || "Owner" %></span>
+                  <div class="text-muted small"><%= (pg.owner && pg.owner.email) || "" %></div>
+                </td>
+                <td class="fw-semibold text-dark">
+                  ₹<%= (pg.rentMin || pg.price || 0).toLocaleString("en-IN") %>
+                </td>
+                <td class="text-muted small">
+                  <%= new Date(pg.createdAt).toLocaleDateString("en-IN") %>
+                </td>
+                <td class="text-end pe-4">
+                  <div class="d-inline-flex gap-2">
+                    <a href="/listings/<%= pg._id %>" class="btn btn-sm btn-light rounded-pill" title="Preview">
+                      <i class="fa-solid fa-eye"></i>
+                    </a>
+                    <!-- Approve Form -->
+                    <form action="/admin/listings/<%= pg._id %>/status" method="POST" class="d-inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="status" value="approved">
+                      <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
+                        <i class="fa-solid fa-check me-1"></i> Approve
+                      </button>
+                    </form>
+                    <!-- Reject Form -->
+                    <form action="/admin/listings/<%= pg._id %>/status" method="POST" class="d-inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="status" value="rejected">
+                      <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                        <i class="fa-solid fa-xmark me-1"></i> Reject
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="p-4 text-center text-muted">
+        <i class="fa-solid fa-circle-check fs-2 text-success mb-2"></i>
+        <p class="mb-0">No pending listings to review. All caught up!</p>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Section 2: Open Community Reports -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 bg-white">
+    <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center justify-content-between">
+      <h5 class="fw-bold mb-0 text-dark">
+        <i class="fa-solid fa-flag text-danger me-2"></i>Community Reports
+      </h5>
+      <span class="badge bg-danger-subtle text-danger rounded-pill"><%= openReports.length %> open</span>
+    </div>
+
+    <% if (openReports && openReports.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 px-4">
+          <thead class="table-light text-muted small">
+            <tr>
+              <th scope="col" class="ps-4">Reported Property</th>
+              <th scope="col">Report Reason</th>
+              <th scope="col">Reported By</th>
+              <th scope="col">Details</th>
+              <th scope="col" class="text-end pe-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let rep of openReports) { %>
+              <tr>
+                <td class="ps-4 py-3">
+                  <% if (rep.pgId) { %>
+                    <a href="/listings/<%= rep.pgId._id %>" class="fw-bold text-decoration-none text-dark">
+                      <%= rep.pgId.title %>
+                    </a>
+                    <div class="text-muted small">Status: <%= rep.pgId.status %></div>
+                  <% } else { %>
+                    <span class="text-muted">Deleted Listing</span>
+                  <% } %>
+                </td>
+                <td>
+                  <span class="badge bg-danger text-white rounded-pill px-3 py-1 text-uppercase small">
+                    <%= rep.reason %>
+                  </span>
+                </td>
+                <td>
+                  <div class="small fw-semibold"><%= (rep.reporterId && rep.reporterId.username) || "Student" %></div>
+                  <div class="text-muted small"><%= (rep.reporterId && rep.reporterId.email) || "" %></div>
+                </td>
+                <td class="text-secondary small" style="max-width: 250px;">
+                  <%= rep.details || "No additional notes provided" %>
+                </td>
+                <td class="text-end pe-4">
+                  <div class="d-inline-flex gap-2">
+                    <% if (rep.pgId && rep.pgId.status !== 'suspended') { %>
+                      <!-- Suspend Listing -->
+                      <form action="/admin/listings/<%= rep.pgId._id %>/status" method="POST" class="d-inline">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <input type="hidden" name="status" value="suspended">
+                        <input type="hidden" name="reviewNote" value="Suspended due to report: <%= rep.reason %>">
+                        <button type="submit" class="btn btn-sm btn-danger rounded-pill px-3">
+                          Suspend PG
+                        </button>
+                      </form>
+                    <% } %>
+                    <!-- Action Report -->
+                    <form action="/admin/reports/<%= rep._id %>/resolve" method="POST" class="d-inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="status" value="actioned">
+                      <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                        Mark Actioned
+                      </button>
+                    </form>
+                    <!-- Dismiss Report -->
+                    <form action="/admin/reports/<%= rep._id %>/resolve" method="POST" class="d-inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="status" value="dismissed">
+                      <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                        Dismiss
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="p-4 text-center text-muted">
+        <i class="fa-solid fa-shield-cat fs-2 text-primary mb-2"></i>
+        <p class="mb-0">No open reports from students. Platform trust is high!</p>
+      </div>
+    <% } %>
+  </div>
+</div>

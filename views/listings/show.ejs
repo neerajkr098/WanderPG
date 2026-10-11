@@ -36,7 +36,87 @@
  <% } %>
 
 
-   <div class="col-8 offset-3 mb-3">
+  <% if (currUser && (!listing.owner || !listing.owner._id.equals(currUser._id))) { %>
+    <!-- Student Enquiry Box -->
+    <div class="col-8 offset-2 mb-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-light">
+        <h5 class="fw-bold text-dark mb-2">
+          <i class="fa-solid fa-paper-plane text-danger me-2"></i>Contact Owner / Send Enquiry
+        </h5>
+        <p class="text-muted small mb-3">Send a direct message to check room availability or ask questions.</p>
+        <form action="/listings/<%= listing._id %>/enquiries" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="mb-3">
+            <textarea
+              name="enquiry[message]"
+              class="form-control rounded-3"
+              rows="3"
+              minlength="10"
+              maxlength="500"
+              placeholder="Hi, I am interested in this PG for the upcoming semester. Is a double sharing room available?"
+              required
+            ></textarea>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <button type="submit" class="btn btn-danger rounded-pill px-4 fw-semibold">
+              <i class="fa-solid fa-envelope me-1"></i> Send Enquiry
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-bs-toggle="modal" data-bs-target="#reportModal">
+              <i class="fa-solid fa-flag me-1"></i> Report Listing
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content rounded-4 border-0">
+          <form action="/listings/<%= listing._id %>/reports" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="modal-header border-0 pb-0">
+              <h5 class="modal-title fw-bold" id="reportModalLabel">Report Listing</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p class="text-muted small">Help us keep WanderPG trusted and safe. Why are you reporting this listing?</p>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Reason</label>
+                <select name="report[reason]" class="form-select rounded-3" required>
+                  <option value="fake">Fake or Scam Listing</option>
+                  <option value="wrong_price">Wrong Price Advertised</option>
+                  <option value="not_available">Not Available / Already Filled</option>
+                  <option value="inappropriate">Inappropriate Content or Photos</option>
+                  <option value="other">Other Issue</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Additional Details (Optional)</label>
+                <textarea name="report[details]" class="form-control rounded-3" rows="3" maxlength="500" placeholder="Describe the issue..."></textarea>
+              </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+              <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-danger rounded-pill px-4">Submit Report</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  <% } else if (!currUser) { %>
+    <div class="col-8 offset-2 mb-4">
+      <div class="alert alert-light border rounded-4 d-flex align-items-center justify-content-between">
+        <div>
+          <i class="fa-solid fa-lock text-danger me-2"></i>
+          <strong>Want to contact the owner?</strong> Log in to send an enquiry and view contact details.
+        </div>
+        <a href="/login" class="btn btn-sm btn-danger rounded-pill px-3">Log in</a>
+      </div>
+    </div>
+  <% } %>
+
+   <div class="col-8 offset-2 mb-3">
     <hr />
     <% if (currUser) { %>
     <h4>Leave a Review</h4>

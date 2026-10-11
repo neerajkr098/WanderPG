@@ -17,4 +17,16 @@ router.post(
   wrapAsync(ownerController.toggleAvailability)
 );
 
+// Enquiry Inbox for Owners
+const enquiryController = require("../controllers/enquiries.js");
+
+// GET /owner/enquiries - Owner Inbox
+router.get("/enquiries", wrapAsync(enquiryController.ownerInbox));
+
+// POST /owner/enquiries/:enquiryId/status - Update enquiry status
+router.post(
+  "/enquiries/:enquiryId/status",
+  wrapAsync(enquiryController.updateEnquiryStatus)
+);
+
 module.exports = router;

@@ -46,4 +46,23 @@ router.get(
   wrapAsync(listingController.renderEditForm),
 );
 
+// Enquiries and Reports on Listings
+const enquiryController = require("../controllers/enquiries.js");
+const reportController = require("../controllers/reports.js");
+const { validateEnquiry, validateReport } = require("../middleware.js");
+
+router.post(
+  "/:id/enquiries",
+  isLoggedIn,
+  validateEnquiry,
+  wrapAsync(enquiryController.createEnquiry)
+);
+
+router.post(
+  "/:id/reports",
+  isLoggedIn,
+  validateReport,
+  wrapAsync(reportController.createReport)
+);
+
 module.exports = router;

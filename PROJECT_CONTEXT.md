@@ -113,22 +113,19 @@ Per `docs/MIGRATION_PLAN.md`, Phase 0 must be completed before any new features.
 | Add rate limits on login and signup | ✅ In `routes/user.js` |
 | Add `express-mongo-sanitize` | ✅ Applied globally |
 
-### Current Development Phase: **Phase 4 — Owner Tools & Listing Lifecycle**
+### Current Development Phase: **Phase 5 — Trust, Enquiries & Moderation**
 
 | Task | Status | Notes |
 |---|---|---|
 | **Phase 0: Base Security & Tooling** | ✅ Completed & Committed | Git initialized, 0 audit vulnerabilities, 0 lint warnings |
 | **Phase 1: Data Model** | ✅ Completed & Committed | User roles, College model, PG fields, migration script |
 | **Phase 2: Nearby Search** | ✅ Completed & Committed | `$geoNear` aggregation, distance groups, college directory & maps |
-| **Role Authorization Middleware** | ✅ Completed | `isOwnerRole`, `isAdminRole` in `middleware.js` |
-| **Role-based Signup** | ✅ Completed | Students vs PG Owners selectable in `signup.ejs` & `users.js` |
-| **Owner Dashboard** | ✅ Completed | `GET /owner/listings` with property table, stats & `views/owner/dashboard.ejs` |
-| **Availability Toggle** | ✅ Completed | `POST /owner/listings/:id/toggle-availability` |
-| **Re-geocoding on Location Update** | ✅ Completed | Re-geocodes with Mapbox when address changes in `updateListing` |
-| **Cloudinary Asset Deletion** | ✅ Completed | Old images deleted from Cloudinary on edit and listing deletion |
-| **Status Review Workflow** | ✅ Completed | New & edited listings return to `pending` until approved |
-| **Joi PG Validation** | ✅ Completed | Validates roomTypes, foodOptions, facilities, rentMin, rentMax |
-| **Test Suite** | ✅ Passing | 34 unit & integration tests across 11 test suites |
+| **Phase 4: Owner Tools** | ✅ Completed & Committed | Owner dashboard, availability toggle, re-geocoding, Cloudinary cleanup |
+| **Enquiry System & Rate Limiting** | ✅ Completed | `POST /listings/:id/enquiries`, max 1/listing/24h, max 5/day |
+| **Owner Enquiry Inbox** | ✅ Completed | `GET /owner/enquiries`, read/close status workflow, `views/owner/enquiries.ejs` |
+| **Community Reporting & Auto-Hide** | ✅ Completed | `POST /listings/:id/reports`, 3 reports auto-suspends listing per PRD |
+| **Admin Moderation Dashboard** | ✅ Completed | `GET /admin/dashboard`, approve/reject/suspend PGs, resolve reports |
+| **Test Suite** | ✅ Passing | 41 unit & integration tests across 14 test suites |
 
 ---
 
