@@ -41,7 +41,10 @@
 </style>
 <nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/listings"><i class="fa-solid fa-compass"></i></a>
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/colleges">
+      <i class="fa-solid fa-graduation-cap text-danger fs-4"></i>
+      <span class="fw-bold" style="color: #fe424d; font-size: 1.25rem;">WanderPG</span>
+    </a>
     <button
       class="navbar-toggler"
       type="button"
@@ -52,14 +55,15 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-link" href="/listings">Explore</a>
+        <a class="nav-link" href="/colleges">Colleges</a>
+        <a class="nav-link" href="/listings">All PGs</a>
       </div>
       
       <div class="navbar-nav ms-auto">
-         <form class="d-flex" role="search">
-      <input class="form-control me-2 search-inp" type="search" placeholder="Search Destination" />
-      <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-    </form>
+        <form class="d-flex" role="search" action="/colleges" method="GET">
+          <input class="form-control me-2 search-inp" type="search" name="q" placeholder="Search college or city..." />
+          <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+        </form>
       </div>
 
       <div class="navbar-nav ms-auto">

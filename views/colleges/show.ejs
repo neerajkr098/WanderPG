@@ -1,0 +1,254 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container-fluid px-lg-5 my-4">
+  <!-- College Header Banner -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4 bg-light">
+    <div class="card-body p-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-1">
+            <li class="breadcrumb-item"><a href="/colleges" class="text-decoration-none text-muted">Colleges</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%= college.name %></li>
+          </ol>
+        </nav>
+        <h2 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+          <i class="fa-solid fa-graduation-cap text-danger"></i>
+          <%= college.name %>
+        </h2>
+        <span class="text-muted">
+          <i class="fa-solid fa-location-dot text-danger me-1"></i> <%= college.city %>, <%= college.state %>
+          &bull; <span class="badge bg-secondary-subtle text-secondary ms-1"><%= total %> PGs within <%= filters.maxDistance / 1000 %> km</span>
+        </span>
+      </div>
+      <div>
+        <a href="/listings/new" class="btn btn-outline-danger rounded-pill fw-semibold">
+          <i class="fa-solid fa-plus me-1"></i> List PG Near This College
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Filter Sidebar (Col-lg-3) -->
+    <div class="col-lg-3">
+      <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 80px; z-index: 10;">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="fw-bold mb-0"><i class="fa-solid fa-sliders text-danger me-2"></i>Filters</h5>
+            <a href="/colleges/<%= college.slug %>" class="text-muted small text-decoration-none">Reset</a>
+          </div>
+
+          <form action="/colleges/<%= college.slug %>" method="GET" id="filter-form">
+            <!-- Radius -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold small text-muted">Max Distance from Campus</label>
+              <select name="maxDistance" class="form-select form-select-sm rounded-3">
+                <option value="500" <%= filters.maxDistance == 500 ? 'selected' : '' %>>Within 500 m (Walking)</option>
+                <option value="1000" <%= filters.maxDistance == 1000 ? 'selected' : '' %>>Within 1 km (10-15 mins)</option>
+                <option value="5000" <%= filters.maxDistance == 5000 ? 'selected' : '' %>>Within 5 km (Short commute)</option>
+              </select>
+            </div>
+
+            <!-- Sort By -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold small text-muted">Sort By</label>
+              <select name="sortBy" class="form-select form-select-sm rounded-3">
+                <option value="distance" <%= filters.sortBy === 'distance' ? 'selected' : '' %>>Distance: Nearest first</option>
+                <option value="rent_asc" <%= filters.sortBy === 'rent_asc' ? 'selected' : '' %>>Rent: Low to High</option>
+                <option value="rent_desc" <%= filters.sortBy === 'rent_desc' ? 'selected' : '' %>>Rent: High to Low</option>
+              </select>
+            </div>
+
+            <!-- Rent Range -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold small text-muted">Budget (₹ / month)</label>
+              <div class="row g-2">
+                <div class="col-6">
+                  <input
+                    type="number"
+                    name="minRent"
+                    value="<%= filters.minRent %>"
+                    class="form-control form-control-sm rounded-3"
+                    placeholder="Min ₹"
+                    min="0"
+                  />
+                </div>
+                <div class="col-6">
+                  <input
+                    type="number"
+                    name="maxRent"
+                    value="<%= filters.maxRent %>"
+                    class="form-control form-control-sm rounded-3"
+                    placeholder="Max ₹"
+                    min="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Room Type -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold small text-muted">Room Type</label>
+              <select name="roomType" class="form-select form-select-sm rounded-3">
+                <option value="">Any room type</option>
+                <option value="single" <%= filters.roomType === 'single' ? 'selected' : '' %>>Single Occupancy</option>
+                <option value="double" <%= filters.roomType === 'double' ? 'selected' : '' %>>Double Sharing</option>
+                <option value="triple" <%= filters.roomType === 'triple' ? 'selected' : '' %>>Triple Sharing</option>
+                <option value="quad" <%= filters.roomType === 'quad' ? 'selected' : '' %>>Quad Sharing</option>
+              </select>
+            </div>
+
+            <!-- Food Options -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold small text-muted">Food Availability</label>
+              <select name="foodOption" class="form-select form-select-sm rounded-3">
+                <option value="">Any food option</option>
+                <option value="veg" <%= filters.foodOption === 'veg' ? 'selected' : '' %>>Vegetarian Only</option>
+                <option value="nonveg" <%= filters.foodOption === 'nonveg' ? 'selected' : '' %>>Non-Vegetarian</option>
+                <option value="both" <%= filters.foodOption === 'both' ? 'selected' : '' %>>Both Veg & Non-Veg</option>
+                <option value="none" <%= filters.foodOption === 'none' ? 'selected' : '' %>>Self Cooking / None</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100 rounded-pill btn-sm fw-semibold py-2">
+              Apply Filters
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Listings & Map Column (Col-lg-9) -->
+    <div class="col-lg-9">
+      <!-- Interactive College Map Section -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+        <div class="card-header bg-white border-0 py-3 d-flex align-items-center justify-content-between">
+          <div class="fw-bold text-dark">
+            <i class="fa-solid fa-map-location-dot text-danger me-2"></i>Campus & Nearby PGs Map
+          </div>
+          <% if (!isLoggedIn) { %>
+            <span class="badge bg-warning-subtle text-warning-emphasis small">
+              <i class="fa-solid fa-lock me-1"></i> Exact locations shown after login
+            </span>
+          <% } %>
+        </div>
+        <div
+          id="college-map"
+          style="width: 100%; height: 350px;"
+          data-college-coords="<%= JSON.stringify(college.location ? college.location.coordinates : [77.209, 28.6139]) %>"
+          data-college-name="<%= college.name %>"
+          data-pg-markers="<%= JSON.stringify(pgMarkers) %>"
+        ></div>
+      </div>
+
+      <!-- Listings Grid Header -->
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="fw-bold mb-0">
+          Available Accommodations
+          <span class="text-muted fw-normal fs-6">(<%= total %>)</span>
+        </h5>
+      </div>
+
+      <!-- PG Cards -->
+      <% if (listings && listings.length > 0) { %>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+          <% for (let pg of listings) { %>
+            <div class="col">
+              <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-hover">
+                <div class="position-relative">
+                  <img
+                    src="<%= (pg.image && pg.image.url) || (pg.images && pg.images[0] && pg.images[0].url) || '/images/placeholder.jpg' %>"
+                    class="card-img-top"
+                    alt="<%= pg.title %>"
+                    style="height: 220px; object-fit: cover;"
+                  />
+                  <!-- Distance Badge -->
+                  <div class="position-absolute top-0 start-0 m-3">
+                    <span class="badge bg-white text-dark shadow-sm px-3 py-2 rounded-pill fw-semibold">
+                      <i class="fa-solid fa-person-walking text-danger me-1"></i>
+                      <%= pg.distanceFormatted %> · <%= pg.distanceGroupLabel %>
+                    </span>
+                  </div>
+                  <!-- Rent Badge -->
+                  <div class="position-absolute bottom-0 end-0 m-3">
+                    <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2 rounded-pill fw-semibold">
+                      ₹<%= (pg.rentMin || pg.price || 0).toLocaleString("en-IN") %>/mo
+                    </span>
+                  </div>
+                </div>
+
+                <div class="card-body p-4 d-flex flex-column">
+                  <h5 class="card-title fw-bold mb-1 text-dark"><%= pg.title %></h5>
+                  <p class="card-text text-muted small mb-2">
+                    <i class="fa-solid fa-location-dot text-danger me-1"></i>
+                    <%= pg.area || pg.locationName || pg.country || "Nearby Campus" %>
+                  </p>
+
+                  <!-- Amenities and tags -->
+                  <div class="d-flex flex-wrap gap-1 mb-3">
+                    <% if (pg.roomTypes && pg.roomTypes.length) { %>
+                      <% for (let rt of pg.roomTypes) { %>
+                        <span class="badge bg-light text-secondary border rounded-pill"><%= rt %></span>
+                      <% } %>
+                    <% } %>
+                    <% if (pg.foodOptions && pg.foodOptions.length && pg.foodOptions[0] !== 'none') { %>
+                      <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                        <i class="fa-solid fa-utensils me-1"></i><%= pg.foodOptions.join(", ") %>
+                      </span>
+                    <% } %>
+                  </div>
+
+                  <div class="mt-auto pt-3 border-top">
+                    <a href="/listings/<%= pg._id %>" class="btn btn-outline-danger w-100 rounded-pill fw-semibold">
+                      View Details & Contact
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+          <nav class="d-flex justify-content-center my-4">
+            <ul class="pagination pagination-rounded">
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= page === i ? 'active' : '' %>">
+                  <a class="page-link" href="/colleges/<%= college.slug %>?page=<%= i %>&maxDistance=<%= filters.maxDistance %>&sortBy=<%= filters.sortBy %>">
+                    <%= i %>
+                  </a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        <% } %>
+
+      <% } else { %>
+        <!-- Empty State -->
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
+          <div class="mb-3 text-muted">
+            <i class="fa-solid fa-building-circle-xmark fs-1 text-danger"></i>
+          </div>
+          <h4 class="fw-bold">No PGs found within <%= filters.maxDistance / 1000 %> km</h4>
+          <p class="text-muted">
+            Try expanding your search radius to 5 km or adjusting your rent and room type filters.
+          </p>
+          <div class="d-flex justify-content-center gap-2 mt-2">
+            <a href="/colleges/<%= college.slug %>?maxDistance=5000" class="btn btn-danger rounded-pill px-4">
+              Widen to 5 km
+            </a>
+            <a href="/listings/new" class="btn btn-outline-secondary rounded-pill px-4">
+              List a PG here
+            </a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script>
+  const mapToken = "<%= process.env.MAP_TOKEN %>";
+</script>
+<script src="/js/collegeMap.js"></script>

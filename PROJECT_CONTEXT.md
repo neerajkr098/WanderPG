@@ -113,18 +113,19 @@ Per `docs/MIGRATION_PLAN.md`, Phase 0 must be completed before any new features.
 | Add rate limits on login and signup | ✅ In `routes/user.js` |
 | Add `express-mongo-sanitize` | ✅ Applied globally |
 
-### Current Development Phase: **Phase 1 — Data Model**
+### Current Development Phase: **Phase 2 — Nearby Search**
 
 | Task | Status | Notes |
 |---|---|---|
-| **Phase 0: Base Security & Tooling** | ✅ Completed & Committed | Git initialized, 0 audit vulnerabilities, 0 lint warnings, 11 tests passing |
-| **Add role to User model** | ✅ Completed | Default `student`, accepts `owner`, `admin` |
-| **Create College model** | ✅ Completed | GeoJSON Point with `2dsphere` index |
-| **Add PG fields to Listing model** | ✅ Completed | Status, rentMin/Max, roomTypes, foodOptions, facilities, rules, 2dsphere index |
-| **Idempotent migration script** | ✅ Completed | `init/migrations/001-pg-fields.js` |
-| **Data model tests** | ✅ Completed | `tests/models.test.js` (8 model tests, 19 tests total passing) |
-| **Seed launch college** | ⏳ Next | Geocoded launch college coordinates |
-| **Phase 2: Nearby Search** | ⏳ Queued | `$geoNear` pipeline in `services/geoSearch.js` |
+| **Phase 0: Base Security & Tooling** | ✅ Completed & Committed | Git initialized, 0 audit vulnerabilities, 0 lint warnings |
+| **Phase 1: Data Model** | ✅ Completed & Committed | User roles, College model, PG fields, migration script, 19 tests |
+| **Launch College Seeding** | ✅ Completed | `init/colleges.js` & `init/seedColleges.js` |
+| **Distance Grouping Utility** | ✅ Completed | `utils/distanceLabel.js` (<500m, 500m-1km, 1-5km) |
+| **Nearby Search Service** | ✅ Completed | `services/geoSearch.js` with `$geoNear` aggregation & filters |
+| **College Routes & Controller** | ✅ Completed | `routes/college.js`, `controllers/colleges.js` |
+| **College Directory & Map Views** | ✅ Completed | `views/colleges/index.ejs`, `views/colleges/show.ejs`, `public/js/collegeMap.js` |
+| **Navbar College Search** | ✅ Completed | Integrated with `GET /colleges` in `views/includes/navbar.ejs` |
+| **Test Suite** | ✅ Passing | 26 unit tests across 8 test suites |
 
 ---
 
