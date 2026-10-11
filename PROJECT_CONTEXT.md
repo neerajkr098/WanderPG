@@ -113,19 +113,22 @@ Per `docs/MIGRATION_PLAN.md`, Phase 0 must be completed before any new features.
 | Add rate limits on login and signup | ✅ In `routes/user.js` |
 | Add `express-mongo-sanitize` | ✅ Applied globally |
 
-### Current Development Phase: **Phase 2 — Nearby Search**
+### Current Development Phase: **Phase 4 — Owner Tools & Listing Lifecycle**
 
 | Task | Status | Notes |
 |---|---|---|
 | **Phase 0: Base Security & Tooling** | ✅ Completed & Committed | Git initialized, 0 audit vulnerabilities, 0 lint warnings |
-| **Phase 1: Data Model** | ✅ Completed & Committed | User roles, College model, PG fields, migration script, 19 tests |
-| **Launch College Seeding** | ✅ Completed | `init/colleges.js` & `init/seedColleges.js` |
-| **Distance Grouping Utility** | ✅ Completed | `utils/distanceLabel.js` (<500m, 500m-1km, 1-5km) |
-| **Nearby Search Service** | ✅ Completed | `services/geoSearch.js` with `$geoNear` aggregation & filters |
-| **College Routes & Controller** | ✅ Completed | `routes/college.js`, `controllers/colleges.js` |
-| **College Directory & Map Views** | ✅ Completed | `views/colleges/index.ejs`, `views/colleges/show.ejs`, `public/js/collegeMap.js` |
-| **Navbar College Search** | ✅ Completed | Integrated with `GET /colleges` in `views/includes/navbar.ejs` |
-| **Test Suite** | ✅ Passing | 26 unit tests across 8 test suites |
+| **Phase 1: Data Model** | ✅ Completed & Committed | User roles, College model, PG fields, migration script |
+| **Phase 2: Nearby Search** | ✅ Completed & Committed | `$geoNear` aggregation, distance groups, college directory & maps |
+| **Role Authorization Middleware** | ✅ Completed | `isOwnerRole`, `isAdminRole` in `middleware.js` |
+| **Role-based Signup** | ✅ Completed | Students vs PG Owners selectable in `signup.ejs` & `users.js` |
+| **Owner Dashboard** | ✅ Completed | `GET /owner/listings` with property table, stats & `views/owner/dashboard.ejs` |
+| **Availability Toggle** | ✅ Completed | `POST /owner/listings/:id/toggle-availability` |
+| **Re-geocoding on Location Update** | ✅ Completed | Re-geocodes with Mapbox when address changes in `updateListing` |
+| **Cloudinary Asset Deletion** | ✅ Completed | Old images deleted from Cloudinary on edit and listing deletion |
+| **Status Review Workflow** | ✅ Completed | New & edited listings return to `pending` until approved |
+| **Joi PG Validation** | ✅ Completed | Validates roomTypes, foodOptions, facilities, rentMin, rentMax |
+| **Test Suite** | ✅ Passing | 34 unit & integration tests across 11 test suites |
 
 ---
 
@@ -204,11 +207,11 @@ WanderPG/
 |---|---|---|---|---|
 | 1 | **Flash messages say "WanderNest"** | `controllers/users.js` | L20, L34 | Fixed ✅ |
 | 2 | **Footer says "WanderNest Private Limited"** | `views/includes/footer.ejs` | L8 | Fixed ✅ |
-| 3 | **No re-geocoding on listing update** | `controllers/listings.js` | `updateListing` | Pending |
-| 4 | **Old Cloudinary image not deleted on update or listing delete** | `controllers/listings.js` | `updateListing` and `destroyListing` | Pending |
+| 3 | **No re-geocoding on listing update** | `controllers/listings.js` | `updateListing` | Fixed ✅ (re-geocodes with Mapbox on address change) |
+| 4 | **Old Cloudinary image not deleted on update or listing delete** | `controllers/listings.js` | `updateListing` and `destroyListing` | Fixed ✅ (calls cloudinary.uploader.destroy) |
 | 5 | **Seed script uses hard-coded owner ID and local Mongo URL** | `init/index.js` | L36, L10 | Pending (update in Phase 1 seed) |
 | 6 | **No multer file size or count limit** | `routes/listing.js` | `upload` middleware | Fixed ✅ (5MB limit set) |
-| 7 | **Navbar search is non-functional** | `views/includes/navbar.ejs` | Form has no action/method | Pending (Phase 2 feature) |
+| 7 | **Navbar search is non-functional** | `views/includes/navbar.ejs` | Form action/method | Fixed ✅ (wired to GET /colleges?q=...) |
 | 8 | **Index filter icons are decorative only** | `views/listings/index.ejs` | No click handlers | Pending (Phase 2 feature) |
 | 9 | **Footer privacy/terms links lead to 404** | `views/includes/footer.ejs` | No routes | Pending (Phase 7) |
 | 10 | **Mapbox GL JS loaded on every page** | `views/layouts/boilerplate.ejs` | L26–29 | Pending |

@@ -61,16 +61,51 @@ describe("Joi Listing Schema", () => {
     assert.ok(error.message.includes("not allowed"));
   });
 
-  it("should reject unknown fields at root level", () => {
+  it("should validate PG fields: rentMin, rentMax, roomTypes, foodOptions, facilities", () => {
+    const valid = {
+      listing: {
+        title: "Modern Student PG",
+        description: "Wi-Fi and power backup included.",
+        location: "North Campus, Delhi",
+        country: "India",
+        price: 8000,
+        rentMin: 7000,
+        rentMax: 9000,
+        roomTypes: ["single", "double"],
+        foodOptions: ["veg", "nonveg"],
+        facilities: ["wifi", "ac", "power_backup"],
+        rules: "No loud music after 10 PM.",
+      },
+    };
+    const { error } = listingSchema.validate(valid);
+    assert.equal(error, undefined);
+  });
+
+  it("should reject invalid roomType", () => {
     const invalid = {
       listing: {
         title: "Test",
         description: "Desc",
-        location: "Asansol",
+        location: "Delhi",
         country: "India",
         price: 100,
+        roomTypes: ["penthouse"],
       },
-      admin: true,
+    };
+    const { error } = listingSchema.validate(invalid);
+    assert.ok(error);
+  });
+
+  it("should reject invalid facility", () => {
+    const invalid = {
+      listing: {
+        title: "Test",
+        description: "Desc",
+        location: "Delhi",
+        country: "India",
+        price: 100,
+        facilities: ["helicopter_pad"],
+      },
     };
     const { error } = listingSchema.validate(invalid);
     assert.ok(error);

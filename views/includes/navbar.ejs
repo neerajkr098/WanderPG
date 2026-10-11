@@ -66,9 +66,14 @@
         </form>
       </div>
 
-      <div class="navbar-nav ms-auto">
+       <div class="navbar-nav ms-auto align-items-center">
+        <% if (currUser && (currUser.role === 'owner' || currUser.role === 'admin')) { %>
+          <a class="nav-link" href="/owner/listings"><i class="fa-solid fa-gauge me-1"></i><b>Dashboard</b></a>
           <a class="nav-link" href="/listings/new">List your PG</a>
-        <% if (!currUser) { %>
+        <% } else if (currUser) { %>
+          <span class="navbar-text small text-muted me-2"><i class="fa-solid fa-user me-1"></i><%= currUser.username %></span>
+        <% } else { %>
+          <a class="nav-link" href="/listings/new">List your PG</a>
           <a class="nav-link" href="/signup"><b>Sign up</b></a>
           <a class="nav-link" href="/login"><b>Log in</b></a>
         <% } %>

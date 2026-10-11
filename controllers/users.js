@@ -6,19 +6,21 @@ module.exports.renderSignupForm = (req, res) => {
 module.exports.signup = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
+    const role = req.body.role === "owner" ? "owner" : "student";
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       req.flash("error", "Could not create account. Try logging in or another email.");
       return res.redirect("/signup");
     }
-    const newUser = new User({ email, username });
+    const newUser = new User({ email, username, role });
     const registeredUser = await User.register(newUser, password);
     req.login(registeredUser, (err) => {
       if (err) {
         return next(err);
       }
-      req.flash("success", "Welcome to WanderPG!");
-      res.redirect("/listings");
+      req.flash("success", `Welcome to WanderPG, ${registeredUser.username}!`);
+      const target = registeredUser.role === "owner" ? "/owner/listings" : "/colleges";
+      res.redirect(target);
     });
   } catch (e) {
     req.flash("error", e.message);

@@ -29,8 +29,35 @@ module.exports.isOwner = async (req, res, next) => {
   if (!listing) {
     return next(new ExpressError(404, "Listing not found"));
   }
-  if (!listing.owner || !listing.owner._id.equals(res.locals.currUser._id)) {
+  const ownerId = listing.ownerId || listing.owner;
+  if (!ownerId || (!ownerId.equals(res.locals.currUser._id) && res.locals.currUser.role !== "admin")) {
     return next(new ExpressError(404, "Listing not found"));
+  }
+  next();
+};
+
+module.exports.isOwnerRole = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    req.session.redirectUrl = req.originalUrl;
+    req.flash("error", "You must be logged in as an owner!");
+    return res.redirect("/login");
+  }
+  if (req.user.role !== "owner" && req.user.role !== "admin") {
+    req.flash("error", "Only PG owners can access this page.");
+    return res.redirect("/listings");
+  }
+  next();
+};
+
+module.exports.isAdminRole = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    req.session.redirectUrl = req.originalUrl;
+    req.flash("error", "You must be logged in as an administrator!");
+    return res.redirect("/login");
+  }
+  if (req.user.role !== "admin") {
+    req.flash("error", "Unauthorized access.");
+    return res.redirect("/listings");
   }
   next();
 };

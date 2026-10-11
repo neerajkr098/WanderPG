@@ -27,17 +27,24 @@
           required
         />
       </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input
-          name="password"
-          id="password"
-          type="password"
-          class="form-control"
-          required
-        />
+      <div class="mb-4">
+        <label class="form-label fw-semibold">Account Type</label>
+        <div class="row g-2">
+          <div class="col-6">
+            <input type="radio" class="btn-check" name="role" id="role-student" value="student" checked autocomplete="off">
+            <label class="btn btn-outline-danger w-100 py-2 rounded-3 text-start" for="role-student">
+              <i class="fa-solid fa-graduation-cap me-1"></i> Student
+            </label>
+          </div>
+          <div class="col-6">
+            <input type="radio" class="btn-check" name="role" id="role-owner" value="owner" autocomplete="off">
+            <label class="btn btn-outline-danger w-100 py-2 rounded-3 text-start" for="role-owner">
+              <i class="fa-solid fa-house-user me-1"></i> PG Owner
+            </label>
+          </div>
+        </div>
       </div>
-      <button class="btn btn-success">SignUp</button>
+      <button class="btn btn-danger w-100 rounded-pill py-2 fw-semibold">Create Account</button>
     </form>
   </div>
 </div>
